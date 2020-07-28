@@ -4,9 +4,22 @@ Description: >
   It meant to be edge, unstable, non-persistent.
   This environment will not have fixed URL.
 
+Parameters:
+  MaintenanceIpRange:
+    Type: String
+
 Resources:
   VPC:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: templates/vpc.yaml
+
+  Cluster:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: templates/cluster.yaml
+      Parameters:
+        VpcId: !GetAtt VPC.Outputs.VpcId
+        MaintenanceIpRange: !Ref MaintenanceIpRange
+
 

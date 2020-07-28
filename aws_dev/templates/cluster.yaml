@@ -1,0 +1,154 @@
+Parameters:
+  InstanceType:
+    Type: String
+    Default: t3.small
+
+#  ClusterSize:
+#    Type: Number
+#    Default: 2
+#
+#  Subnets:
+#    Type: List<AWS::EC2::Subnet::Id>
+#
+#  SourceSecurityGroup:
+#    Type: AWS::EC2::SecurityGroup::Id
+
+  MaintenanceIpRange:
+    Type: String
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+
+Resources:
+  ECSRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Condition: EC2
+    Properties:
+      Path: /
+      Roles:
+        - !Ref ECSRole
+
+  EC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "ECS Allowed Ports"
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+          Description: Web for load balancer
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref MaintenanceIpRange
+          Description: ssh for maintenance
+        - IpProtocol: tcp
+          FromPort: 6379
+          ToPort: 6379
+          SourceSecurityGroupId: !Ref EC2SecurityGroup
+          Description: Redis
+        - IpProtocol: tcp
+          FromPort: 5000
+          ToPort: 5000
+          SourceSecurityGroupId: !Ref EC2SecurityGroup
+          Description: App
+        - IpProtocol: tcp
+          FromPort: 27017
+          ToPort: 27017
+          SourceSecurityGroupId: !Ref EC2SecurityGroup
+          Description: MongoDB
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+
+  Cluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref AWS::StackName
+
+  AutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    # Metadata about ECS initialization
+    # see https://github.com/awslabs/ecs-refarch-continuous-deployment/blob/master/templates/ecs-cluster.yaml#L133
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          commands:
+            01_add_instance_to_cluster:
+              command: !Sub echo ECS_CLUSTER=${Cluster} > /etc/ecs/ecs.config
+          files:
+            "/etc/cfn/cfn-hup.conf":
+              mode: 000400
+              owner: root
+              group: root
+              content: !Sub |
+                [main]
+                stack=${AWS::StackId}
+                region=${AWS::Region}
+            "/etc/cfn/hooks.d/cfn-auto-reloader.conf":
+              content: !Sub |
+                [cfn-auto-reloader-hook]
+                triggers=post.update
+                path=Resources.ContainerInstances.Metadata.AWS::CloudFormation::Init
+                action=/opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource LaunchConfiguration
+          services:
+            sysvinit:
+              cfn-hup:
+                enabled: true
+                ensureRunning: true
+                files:
+                  - /etc/cfn/cfn-hup.conf
+                  - /etc/cfn/hooks.d/cfn-auto-reloader.conf
+    Properties:
+      AvailabilityZones: !Select [ 0, !GetAZs ]
+      Cooldown: 300
+      DesiredCapacity: 1
+      HealthCheckGracePeriod: 0
+      HealthCheckType: EC2
+      MaxSize: 1
+      MinSize: 0
+      VPCZoneIdentifier:
+        - !Ref EC2SecurityGroup
+      LaunchConfigurationName: !Ref LaunchConfiguration
+      Tags:
+        - Key: Name
+          Value: ECS Instance - EC2ContainerService-asobann-dev
+          PropagateAtLaunch: true
+      TerminationPolicies: Default
+
+  LaunchConfiguration:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      ImageId: ami-08b26b905b0d17561
+      InstanceType: !Ref InstanceType
+      KeyName: asobann_aws
+      IamInstanceProfile: !Ref InstanceProfile
+      InstanceMonitoring: true
+      SecurityGroups:
+        - !Ref EC2SecurityGroup
+      # see https://github.com/awslabs/ecs-refarch-continuous-deployment/blob/master/templates/ecs-cluster.yaml#L133
+      UserData:
+        "Fn::Base64": !Sub |
+          #!/bin/bash
+          yum install -y aws-cfn-bootstrap
+          /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource LaunchConfiguration
+          /opt/aws/bin/cfn-signal -e $? --region ${AWS::Region} --stack ${AWS::StackName} --resource AutoScalingGroup
+
+Outputs:
+  ClusterName:
+    Value: !Ref Cluster

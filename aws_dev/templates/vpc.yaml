@@ -53,3 +53,9 @@ Resources:
     Properties:
       RouteTableId: !Ref RouteTable
       SubnetId: !Ref PublicSubnet
+
+Outputs:
+  Subnets:
+    Value: !Join [ ",", [ !Ref PublicSubnet ] ]
+  VpcId:
+    Value: !Ref VPC
