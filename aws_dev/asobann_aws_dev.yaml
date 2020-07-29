@@ -23,4 +23,24 @@ Resources:
         Subnets: !GetAtt VPC.Outputs.Subnets
         MaintenanceIpRange: !Ref MaintenanceIpRange
 
+  LoadBalancer:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: templates/load-balancer.yaml
+      Parameters:
+        Subnets: !GetAtt VPC.Outputs.Subnets
+        VpcId: !GetAtt VPC.Outputs.VpcId
+
+  Service:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: templates/service.yaml
+      Parameters:
+#        Subnets: !GetAtt VPC.Outputs.Subnets
+        VpcId: !GetAtt VPC.Outputs.VpcId
+        Cluster: !GetAtt Cluster.Outputs.ClusterName
+        TargetGroup: !GetAtt LoadBalancer.Outputs.TargetGroup
+
+
+
 

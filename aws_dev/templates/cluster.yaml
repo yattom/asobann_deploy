@@ -75,7 +75,7 @@ Resources:
       SourceSecurityGroupId: !Ref EC2SecurityGroup
       Description: App
 
-  EC2SecurityGroupIngressMongoDB:
+  EC2SecurityGroupIngressMongoDb:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       GroupId: !Ref EC2SecurityGroup
@@ -92,6 +92,27 @@ Resources:
 
   AutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AvailabilityZones:
+        - !Select [ 0, !GetAZs ]
+        - !Select [ 1, !GetAZs ]
+      Cooldown: 300
+      DesiredCapacity: 1
+      HealthCheckGracePeriod: 0
+      HealthCheckType: EC2
+      MaxSize: 2
+      MinSize: 0
+      VPCZoneIdentifier: !Ref Subnets
+      LaunchConfigurationName: !Ref LaunchConfiguration
+      Tags:
+        - Key: Name
+          Value: ECS Instance - EC2ContainerService-asobann-dev
+          PropagateAtLaunch: true
+      TerminationPolicies:
+        - Default
+
+  LaunchConfiguration:
+    Type: AWS::AutoScaling::LaunchConfiguration
     # Metadata about ECS initialization
     # see https://github.com/awslabs/ecs-refarch-continuous-deployment/blob/master/templates/ecs-cluster.yaml#L133
     Metadata:
@@ -124,27 +145,7 @@ Resources:
                   - /etc/cfn/cfn-hup.conf
                   - /etc/cfn/hooks.d/cfn-auto-reloader.conf
     Properties:
-      AvailabilityZones:
-        - !Select [ 0, !GetAZs ]
-      Cooldown: 300
-      DesiredCapacity: 1
-      HealthCheckGracePeriod: 0
-      HealthCheckType: EC2
-      MaxSize: 2
-      MinSize: 0
-      VPCZoneIdentifier: !Ref Subnets
-      LaunchConfigurationName: !Ref LaunchConfiguration
-      Tags:
-        - Key: Name
-          Value: ECS Instance - EC2ContainerService-asobann-dev
-          PropagateAtLaunch: true
-      TerminationPolicies:
-        - Default
-
-  LaunchConfiguration:
-    Type: AWS::AutoScaling::LaunchConfiguration
-    Properties:
-      ImageId: ami-08b26b905b0d17561
+      ImageId: ami-007cd1678c6286a05
       InstanceType: !Ref InstanceType
       KeyName: asobann_aws
       IamInstanceProfile: !Ref InstanceProfile
