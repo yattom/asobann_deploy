@@ -20,6 +20,7 @@ Resources:
       TemplateURL: templates/cluster.yaml
       Parameters:
         VpcId: !GetAtt VPC.Outputs.VpcId
+        Subnets: !GetAtt VPC.Outputs.Subnets
         MaintenanceIpRange: !Ref MaintenanceIpRange
 
 
