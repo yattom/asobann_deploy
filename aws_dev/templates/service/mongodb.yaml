@@ -72,7 +72,7 @@ Resources:
             Type: SRV
       HealthCheckCustomConfig:
         FailureThreshold: 1
-      Name: mongodb
+      Name: _mongodb._tcp.mongodb
       NamespaceId: !Ref PrivateNamespace
 
 Outputs:

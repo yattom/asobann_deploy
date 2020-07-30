@@ -56,7 +56,7 @@ Resources:
   PrivateNamespace:
     Type: AWS::ServiceDiscovery::PrivateDnsNamespace
     Properties:
-      Name: asobann-dev.
+      Name: asobann-dev.yattom.jp.
       Vpc: !Ref VpcId
 
   RedisService:

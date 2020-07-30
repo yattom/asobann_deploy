@@ -59,9 +59,9 @@ Resources:
               ContainerPort: 5000
           Environment:
             - Name: MONGODB_URI
-              Value: !Sub mongodb+srv://admin:${MongoDbPassword}@mongodb.asobann-dev/asobann_dev?authSource=admin
+              Value: !Sub mongodb+srv://admin:${MongoDbPassword}@mongodb.asobann-dev.yattom.jp/asobann_dev?authSource=admin&ssl=false
 #            - Name: REDIS_URI
-#              Value: redis://redis.asobann-dev:6379
+#              Value: redis://redis.asobann-dev.yattom.jp:6379
           LogConfiguration:
             LogDriver: awslogs
             Options:

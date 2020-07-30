@@ -64,7 +64,7 @@ Resources:
             Type: SRV
       HealthCheckCustomConfig:
         FailureThreshold: 1
-      Name: redis
+      Name: _redis._tcp.redis
       NamespaceId: !Ref PrivateNamespace
 
 Outputs:

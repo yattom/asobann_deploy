@@ -55,6 +55,8 @@ Resources:
       TargetGroupAttributes:
         - Key: deregistration_delay.timeout_seconds
           Value: 30
+        - Key: stickiness.enabled
+          Value: true
 
 
 
