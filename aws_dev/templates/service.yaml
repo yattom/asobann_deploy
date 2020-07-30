@@ -61,18 +61,17 @@ Resources:
         LogGroup: !Ref LogGroup
         PrivateNamespace: !Ref PrivateNamespace
 
-  MongoDbDiscoveryService:
-    Type: AWS::ServiceDiscovery::Service
-    Properties:
-      DnsConfig:
-        RoutingPolicy: MULTIVALUE
-        DnsRecords:
-          - TTL: 60
-            Type: SRV
-      HealthCheckCustomConfig:
-        FailureThreshold: 1
-      Name: mongodb
-      NamespaceId: !Ref PrivateNamespace
+#  MongoDbService:
+#    Type: AWS::CloudFormation::Stack
+#    Properties:
+#      TemplateURL: service/mongodb.yaml
+#      Parameters:
+#        VpcId: !Ref VpcId
+#        Cluster: !Ref Cluster
+#        TaskExecutionRole: !Ref TaskExecutionRole
+#        LogGroup: !Ref LogGroup
+#        PrivateNamespace: !Ref PrivateNamespace
+
 
 Outputs:
   RedisService:

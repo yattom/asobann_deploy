@@ -25,6 +25,10 @@ Resources:
       DesiredCount: 1
       TaskDefinition: !Ref RedisTaskDefinition
       LaunchType: EC2
+      ServiceRegistries:
+        - RegistryArn: !GetAtt RedisDiscoveryService.Arn
+          ContainerName: redis-container
+          ContainerPort: 6379
 
   RedisTaskDefinition:
     Type: AWS::ECS::TaskDefinition
@@ -42,7 +46,6 @@ Resources:
           Essential: true
           PortMappings:
             - Protocol: tcp
-              HostPort: 6379
               ContainerPort: 6379
           LogConfiguration:
             LogDriver: awslogs
