@@ -1,0 +1,73 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+
+Parameters:
+  Cluster:
+    Type: String
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+
+  TaskExecutionRole:
+    Type: String
+
+  LogGroup:
+    Type: String
+
+  PrivateNamespace:
+    Type: String
+
+Resources:
+  MongoDbService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref Cluster
+      DesiredCount: 1
+      TaskDefinition: !Ref MongoDbTaskDefinition
+      LaunchType: EC2
+      ServiceRegistries:
+        - RegistryArn: !GetAtt MongoDbDiscoveryService.Arn
+          ContainerName: mongodb-container
+          ContainerPort: 27017
+
+  MongoDbTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: mongodb
+      RequiresCompatibilities:
+        - EC2
+      Memory: 512
+      Cpu: 512
+      NetworkMode: bridge
+      ExecutionRoleArn: !Ref TaskExecutionRole
+      ContainerDefinitions:
+        - Name: mongodb-container
+          Image: mongo:latest
+          Essential: true
+          PortMappings:
+            - Protocol: tcp
+              ContainerPort: 27017
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: !Sub /ecs/${AWS::StackName}/mongodb
+
+  MongoDbDiscoveryService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      DnsConfig:
+        RoutingPolicy: MULTIVALUE
+        DnsRecords:
+          - TTL: 60
+            Type: SRV
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      Name: mongodb
+      NamespaceId: !Ref PrivateNamespace
+
+Outputs:
+  RedisService:
+    Value: !Ref MongoDbService
+

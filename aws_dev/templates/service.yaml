@@ -61,16 +61,16 @@ Resources:
         LogGroup: !Ref LogGroup
         PrivateNamespace: !Ref PrivateNamespace
 
-#  MongoDbService:
-#    Type: AWS::CloudFormation::Stack
-#    Properties:
-#      TemplateURL: service/mongodb.yaml
-#      Parameters:
-#        VpcId: !Ref VpcId
-#        Cluster: !Ref Cluster
-#        TaskExecutionRole: !Ref TaskExecutionRole
-#        LogGroup: !Ref LogGroup
-#        PrivateNamespace: !Ref PrivateNamespace
+  MongoDbService:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: service/mongodb.yaml
+      Parameters:
+        VpcId: !Ref VpcId
+        Cluster: !Ref Cluster
+        TaskExecutionRole: !Ref TaskExecutionRole
+        LogGroup: !Ref LogGroup
+        PrivateNamespace: !Ref PrivateNamespace
 
 
 Outputs:
