@@ -1,0 +1,70 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+
+Parameters:
+  Cluster:
+    Type: String
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+
+  TaskExecutionRole:
+    Type: String
+
+  LogGroup:
+    Type: String
+
+  PrivateNamespace:
+    Type: String
+
+Resources:
+  RedisService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref Cluster
+      DesiredCount: 1
+      TaskDefinition: !Ref RedisTaskDefinition
+      LaunchType: EC2
+
+  RedisTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: redis
+      RequiresCompatibilities:
+        - EC2
+      Memory: 256
+      Cpu: 256
+      NetworkMode: bridge
+      ExecutionRoleArn: !Ref TaskExecutionRole
+      ContainerDefinitions:
+        - Name: redis-container
+          Image: redis:latest
+          Essential: true
+          PortMappings:
+            - Protocol: tcp
+              HostPort: 6379
+              ContainerPort: 6379
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: !Sub /ecs/${AWS::StackName}/redis
+
+  RedisDiscoveryService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      DnsConfig:
+        RoutingPolicy: MULTIVALUE
+        DnsRecords:
+          - TTL: 60
+            Type: SRV
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      Name: redis
+      NamespaceId: !Ref PrivateNamespace
+
+Outputs:
+  RedisService:
+    Value: !Ref RedisService
+

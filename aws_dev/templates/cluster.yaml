@@ -101,7 +101,7 @@ Resources:
       HealthCheckGracePeriod: 0
       HealthCheckType: EC2
       MaxSize: 2
-      MinSize: 0
+      MinSize: 1
       VPCZoneIdentifier: !Ref Subnets
       LaunchConfigurationName: !Ref LaunchConfiguration
       Tags:
