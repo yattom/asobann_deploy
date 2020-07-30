@@ -5,6 +5,9 @@ Parameters:
   Cluster:
     Type: String
 
+  LoadBalancerListener:
+    Type: String
+
   TargetGroup:
     Type: String
 
@@ -16,6 +19,12 @@ Parameters:
 
   VpcId:
     Type: AWS::EC2::VPC::Id
+
+  MongoDbPassword:
+    Type: String
+
+  AppImage:
+    Type: String
 
 Resources:
   TaskExecutionRole:
@@ -71,7 +80,21 @@ Resources:
         TaskExecutionRole: !Ref TaskExecutionRole
         LogGroup: !Ref LogGroup
         PrivateNamespace: !Ref PrivateNamespace
+        MongoDbPassword: !Ref MongoDbPassword
 
+  AppService:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: service/app.yaml
+      Parameters:
+        VpcId: !Ref VpcId
+        Cluster: !Ref Cluster
+        TaskExecutionRole: !Ref TaskExecutionRole
+        LogGroup: !Ref LogGroup
+        LoadBalancerListener: !Ref LoadBalancerListener
+        TargetGroup: !Ref TargetGroup
+        MongoDbPassword: !Ref MongoDbPassword
+        AppImage: !Ref AppImage
 
 Outputs:
   RedisService:

@@ -1,0 +1,88 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+
+Parameters:
+  Cluster:
+    Type: String
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+
+  TaskExecutionRole:
+    Type: String
+
+  LogGroup:
+    Type: String
+
+  LoadBalancerListener:
+    Type: String
+
+  TargetGroup:
+    Type: String
+
+  MongoDbPassword:
+    Type: String
+
+  AppImage:
+    Type: String
+
+Resources:
+  Service:
+    Type: AWS::ECS::Service
+    DependsOn: ListenerRule
+    Properties:
+      Cluster: !Ref Cluster
+      DesiredCount: 1
+      TaskDefinition: !Ref TaskDefinition
+      LaunchType: EC2
+      LoadBalancers:
+        - ContainerName: app-container
+          ContainerPort: 5000
+          TargetGroupArn: !Ref TargetGroup
+
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: app
+      RequiresCompatibilities:
+        - EC2
+      Memory: 256
+      Cpu: 256
+      NetworkMode: bridge
+      ExecutionRoleArn: !Ref TaskExecutionRole
+      ContainerDefinitions:
+        - Name: app-container
+          Image: !Ref AppImage
+          Essential: true
+          PortMappings:
+            - Protocol: tcp
+              ContainerPort: 5000
+          Environment:
+            - Name: MONGODB_URI
+              Value: !Sub mongodb+srv://admin:${MongoDbPassword}@mongodb.asobann-dev/asobann_dev?authSource=admin
+#            - Name: REDIS_URI
+#              Value: redis://redis.asobann-dev:6379
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: !Sub /ecs/${AWS::StackName}/app
+
+  ListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      ListenerArn: !Ref LoadBalancerListener
+      Priority: 1
+      Conditions:
+        - Field: path-pattern
+          Values:
+            - /
+      Actions:
+        - TargetGroupArn: !Ref TargetGroup
+          Type: forward
+
+Outputs:
+  Service:
+    Value: !Ref Service
+

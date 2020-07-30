@@ -17,6 +17,9 @@ Parameters:
   PrivateNamespace:
     Type: String
 
+  MongoDbPassword:
+    Type: String
+
 Resources:
   MongoDbService:
     Type: AWS::ECS::Service
@@ -47,6 +50,11 @@ Resources:
           PortMappings:
             - Protocol: tcp
               ContainerPort: 27017
+          Environment:
+            - Name: MONGO_INITDB_ROOT_PASSWORD
+              Value: !Ref MongoDbPassword
+            - Name: MONGO_INITDB_ROOT_USERNAME
+              Value: admin
           LogConfiguration:
             LogDriver: awslogs
             Options:

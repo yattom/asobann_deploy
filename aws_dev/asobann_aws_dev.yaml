@@ -8,6 +8,12 @@ Parameters:
   MaintenanceIpRange:
     Type: String
 
+  MongoDbPassword:
+    Type: String
+
+  AppImage:
+    Type: String
+
 Resources:
   VPC:
     Type: AWS::CloudFormation::Stack
@@ -39,7 +45,10 @@ Resources:
 #        Subnets: !GetAtt VPC.Outputs.Subnets
         VpcId: !GetAtt VPC.Outputs.VpcId
         Cluster: !GetAtt Cluster.Outputs.ClusterName
+        LoadBalancerListener: !GetAtt LoadBalancer.Outputs.LoadBalancerListener
         TargetGroup: !GetAtt LoadBalancer.Outputs.TargetGroup
+        MongoDbPassword: !Ref MongoDbPassword
+        AppImage: !Ref AppImage
 
 
 
