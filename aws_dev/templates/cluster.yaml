@@ -10,8 +10,8 @@ Parameters:
   Subnets:
     Type: List<AWS::EC2::Subnet::Id>
 
-#  SourceSecurityGroup:
-#    Type: AWS::EC2::SecurityGroup::Id
+  LBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup::Id
 
   MaintenanceIpRange:
     Type: String
@@ -51,6 +51,8 @@ Resources:
           ToPort: 22
           CidrIp: !Ref MaintenanceIpRange
           Description: ssh for maintenance
+        - IpProtocol: -1
+          SourceSecurityGroupId: !Ref LBSecurityGroup
       SecurityGroupEgress:
         - IpProtocol: -1
           CidrIp: 0.0.0.0/0

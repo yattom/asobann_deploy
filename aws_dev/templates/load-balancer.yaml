@@ -42,7 +42,7 @@ Resources:
     DependsOn: LoadBalancer
     Properties:
       VpcId: !Ref VpcId
-      Port: 5000
+      Port: 80
       Protocol: HTTP
       Matcher:
         HttpCode: 200-399

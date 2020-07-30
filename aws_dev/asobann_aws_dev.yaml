@@ -27,6 +27,7 @@ Resources:
       Parameters:
         VpcId: !GetAtt VPC.Outputs.VpcId
         Subnets: !GetAtt VPC.Outputs.Subnets
+        LBSecurityGroup: !GetAtt LoadBalancer.Outputs.LBSecurityGroup
         MaintenanceIpRange: !Ref MaintenanceIpRange
 
   LoadBalancer:
