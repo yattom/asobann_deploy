@@ -7,16 +7,9 @@ Resources:
       CidrBlock: 10.0.0.0/16
       EnableDnsHostnames: true
       EnableDnsSupport: true
-      Tags:
-        - Key: ProjectName
-          Value: asobann
 
   InternetGateway:
     Type: AWS::EC2::InternetGateway
-    Properties:
-      Tags:
-        - Key: ProjectName
-          Value: asobann
 
   InternetGatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -31,9 +24,6 @@ Resources:
       AvailabilityZone: !Select [ 0, !GetAZs ]
       MapPublicIpOnLaunch: true
       CidrBlock: 10.0.0.0/24
-      Tags:
-        - Key: ProjectName
-          Value: asobann
 
   PublicSubnet2:
     Type: AWS::EC2::Subnet
@@ -42,17 +32,11 @@ Resources:
       AvailabilityZone: !Select [ 1, !GetAZs ]
       MapPublicIpOnLaunch: true
       CidrBlock: 10.0.1.0/24
-      Tags:
-        - Key: ProjectName
-          Value: asobann
 
   RouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VPC
-      Tags:
-        - Key: ProjectName
-          Value: asobann
 
   DefaultRoute:
     Type: AWS::EC2::Route
