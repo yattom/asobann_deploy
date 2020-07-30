@@ -106,7 +106,11 @@ Resources:
       LaunchConfigurationName: !Ref LaunchConfiguration
       Tags:
         - Key: Name
-          Value: ECS Instance - EC2ContainerService-asobann-dev
+          Value: asobann-dev ECS instance
+          PropagateAtLaunch: true
+      Tags:
+        - Key: ProjectName
+          Value: asobann
           PropagateAtLaunch: true
       TerminationPolicies:
         - Default
