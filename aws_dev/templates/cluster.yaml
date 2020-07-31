@@ -57,35 +57,12 @@ Resources:
         - IpProtocol: -1
           CidrIp: 0.0.0.0/0
 
-  EC2SecurityGroupIngressRedis:
+  EC2SecurityGroupIngress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       GroupId: !Ref EC2SecurityGroup
-      IpProtocol: tcp
-      FromPort: 6379
-      ToPort: 6379
+      IpProtocol: -1
       SourceSecurityGroupId: !Ref EC2SecurityGroup
-      Description: Redis
-
-  EC2SecurityGroupIngressApp:
-    Type: AWS::EC2::SecurityGroupIngress
-    Properties:
-      GroupId: !Ref EC2SecurityGroup
-      IpProtocol: tcp
-      FromPort: 5000
-      ToPort: 5000
-      SourceSecurityGroupId: !Ref EC2SecurityGroup
-      Description: App
-
-  EC2SecurityGroupIngressMongoDb:
-    Type: AWS::EC2::SecurityGroupIngress
-    Properties:
-      GroupId: !Ref EC2SecurityGroup
-      IpProtocol: tcp
-      FromPort: 27017
-      ToPort: 27017
-      SourceSecurityGroupId: !Ref EC2SecurityGroup
-      Description: MongoDB
 
   Cluster:
     Type: AWS::ECS::Cluster
