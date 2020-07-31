@@ -32,7 +32,7 @@ Resources:
     DependsOn: ListenerRule
     Properties:
       Cluster: !Ref Cluster
-      DesiredCount: 1
+      DesiredCount: 3
       TaskDefinition: !Ref TaskDefinition
       LaunchType: EC2
       LoadBalancers:
@@ -60,8 +60,8 @@ Resources:
           Environment:
             - Name: MONGODB_URI
               Value: !Sub mongodb+srv://admin:${MongoDbPassword}@mongodb.asobann-dev.yattom.jp/asobann_dev?authSource=admin&ssl=false
-#            - Name: REDIS_URI
-#              Value: redis://redis.asobann-dev.yattom.jp:6379
+            - Name: REDIS_URI
+              Value: redis+srv://redis.asobann-dev.yattom.jp
           LogConfiguration:
             LogDriver: awslogs
             Options:
