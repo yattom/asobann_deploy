@@ -32,6 +32,36 @@ Resources:
               Service: ec2.amazonaws.com
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+      Policies:
+        - PolicyName: RexrayPolicy
+          PolicyDocument: |
+            {
+              "Version": "2012-10-17",
+              "Statement": [{
+                "Effect": "Allow",
+                "Action": [
+                  "ec2:AttachVolume",
+                  "ec2:CreateVolume",
+                  "ec2:CreateSnapshot",
+                  "ec2:CreateTags",
+                  "ec2:DeleteVolume",
+                  "ec2:DeleteSnapshot",
+                  "ec2:DescribeAvailabilityZones",
+                  "ec2:DescribeInstances",
+                  "ec2:DescribeVolumes",
+                  "ec2:DescribeVolumeAttribute",
+                  "ec2:DescribeVolumeStatus",
+                  "ec2:DescribeSnapshots",
+                  "ec2:CopySnapshot",
+                  "ec2:DescribeSnapshotAttribute",
+                  "ec2:DetachVolume",
+                  "ec2:ModifySnapshotAttribute",
+                  "ec2:ModifyVolumeAttribute",
+                  "ec2:DescribeTags"
+                ],
+                "Resource": "*"
+              }]
+            }
 
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
@@ -100,6 +130,8 @@ Resources:
           commands:
             01_add_instance_to_cluster:
               command: !Sub echo ECS_CLUSTER=${Cluster} > /etc/ecs/ecs.config
+#            02_start_ecs_agent:
+#              command: start ecs
           files:
             "/etc/cfn/cfn-hup.conf":
               mode: 000400
@@ -132,12 +164,28 @@ Resources:
       SecurityGroups:
         - !Ref EC2SecurityGroup
       # see https://github.com/awslabs/ecs-refarch-continuous-deployment/blob/master/templates/ecs-cluster.yaml#L133
+      # about mounting EBS volume see https://appfleet.com/blog/how-to-attach-a-volume-to-a-docker-container-in-aws-ecs/
       UserData:
         "Fn::Base64": !Sub |
           #!/bin/bash
           yum install -y aws-cfn-bootstrap
           /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource LaunchConfiguration
           /opt/aws/bin/cfn-signal -e $? --region ${AWS::Region} --stack ${AWS::StackName} --resource AutoScalingGroup
+          exec 2>>/var/log/ecs/ecs-agent-install.log
+          set -x
+          docker plugin install rexray/ebs REXRAY_PREEMPT=true EBS_REGION=${AWS::Region} --grant-all-permissions
+#          until curl -s http://localhost:51678/v1/metadata
+#          do
+#           sleep 1
+#          done
+#          docker plugin install rexray/ebs REXRAY_PREEMPT=true EBS_REGION=${AWS::Region} --grant-all-permissions
+#          stop ecs
+#          start ecs
+
+
+
+
+
 
 Outputs:
   ClusterName:

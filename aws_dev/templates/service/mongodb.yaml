@@ -50,6 +50,10 @@ Resources:
           PortMappings:
             - Protocol: tcp
               ContainerPort: 27017
+          MountPoints:
+            - SourceVolume: mongodb-data
+              ContainerPath: /data/db
+              ReadOnly: false
           Environment:
             - Name: MONGO_INITDB_ROOT_PASSWORD
               Value: !Ref MongoDbPassword
@@ -61,6 +65,16 @@ Resources:
               awslogs-region: !Ref AWS::Region
               awslogs-group: !Ref LogGroup
               awslogs-stream-prefix: !Sub /ecs/${AWS::StackName}/mongodb
+      Volumes:
+        - Name: mongodb-data
+          DockerVolumeConfiguration:
+            Scope: shared
+            AutoProvision: true
+            Driver: rexray/ebs
+            DriverOpts:
+              volumetype: gp2
+              size: 10
+
 
   MongoDbDiscoveryService:
     Type: AWS::ServiceDiscovery::Service
