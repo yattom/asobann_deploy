@@ -35,6 +35,7 @@ Resources:
     Properties:
       TemplateURL: templates/load-balancer.yaml
       Parameters:
+        PublicHostname: dev.asobann.yattom.jp
         Subnets: !GetAtt VPC.Outputs.Subnets
         VpcId: !GetAtt VPC.Outputs.VpcId
 

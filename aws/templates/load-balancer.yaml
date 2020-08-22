@@ -1,6 +1,9 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
+  PublicHostname:
+    Type: String
+
   Subnets:
     Type: List<AWS::EC2::Subnet::Id>
 
@@ -58,6 +61,15 @@ Resources:
         - Key: stickiness.enabled
           Value: true
 
+  DNSRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: asobann.yattom.jp.
+      Name: !Ref PublicHostname
+      Type: CNAME
+      TTL: '300'
+      ResourceRecords:
+        - !Sub ${LoadBalancer.DNSName}
 
 
 Outputs:
