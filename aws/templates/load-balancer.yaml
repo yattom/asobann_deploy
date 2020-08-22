@@ -22,6 +22,11 @@ Resources:
           ToPort: 80
           CidrIp: 0.0.0.0/0
           Description: Web for load balancer
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+          Description: Web (secure) for load balancer
 
   LoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
@@ -66,10 +71,11 @@ Resources:
     Properties:
       HostedZoneName: asobann.yattom.jp.
       Name: !Ref PublicHostname
-      Type: CNAME
-      TTL: '300'
-      ResourceRecords:
-        - !Sub ${LoadBalancer.DNSName}
+      Type: A
+      AliasTarget:
+        DNSName: !Sub ${LoadBalancer.DNSName}
+        EvaluateTargetHealth: true
+        HostedZoneId: Z35SXDOTRQ7X7K  # use CanonicalHostedZoneId from 'aws elbv2 describe-load-balancers'
 
 
 Outputs:
