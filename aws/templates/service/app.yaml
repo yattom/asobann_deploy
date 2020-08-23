@@ -26,13 +26,16 @@ Parameters:
   AppImage:
     Type: String
 
+  AppTaskCount:
+    Type: String
+
 Resources:
   Service:
     Type: AWS::ECS::Service
     DependsOn: ListenerRule
     Properties:
       Cluster: !Ref Cluster
-      DesiredCount: 3
+      DesiredCount: !Ref AppTaskCount
       TaskDefinition: !Ref TaskDefinition
       LaunchType: EC2
       LoadBalancers:

@@ -26,6 +26,9 @@ Parameters:
   AppImage:
     Type: String
 
+  AppTaskCount:
+    Type: String
+
 Resources:
   TaskExecutionRole:
     Type: AWS::IAM::Role
@@ -95,6 +98,7 @@ Resources:
         TargetGroup: !Ref TargetGroup
         MongoDbPassword: !Ref MongoDbPassword
         AppImage: !Ref AppImage
+        AppTaskCount: !Ref AppTaskCount
 
 Outputs:
   RedisService:
