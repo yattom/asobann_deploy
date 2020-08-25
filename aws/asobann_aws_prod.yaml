@@ -14,6 +14,10 @@ Parameters:
   AppImage:
     Type: String
 
+  AppTaskCount:
+    Type: String
+    Default: 3
+
 Resources:
   VPC:
     Type: AWS::CloudFormation::Stack
@@ -51,6 +55,7 @@ Resources:
         TargetGroup: !GetAtt LoadBalancer.Outputs.TargetGroup
         MongoDbPassword: !Ref MongoDbPassword
         AppImage: !Ref AppImage
+        AppTaskCount: !Ref AppTaskCount
 
 
 
