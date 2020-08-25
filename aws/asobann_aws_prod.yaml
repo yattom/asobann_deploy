@@ -11,6 +11,9 @@ Parameters:
   MongoDbPassword:
     Type: String
 
+  PublicHostname:
+    Type: String
+
   AppImage:
     Type: String
 
@@ -42,18 +45,16 @@ Resources:
     Properties:
       TemplateURL: templates/load-balancer.yaml
       Parameters:
-        PublicHostname: asobann.yattom.jp
+        PublicHostname: !Ref PublicHostname
         Subnets: !GetAtt VPC.Outputs.Subnets
         VpcId: !GetAtt VPC.Outputs.VpcId
         CertificateArn: !Ref CertificateArn
-
 
   Service:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: templates/service.yaml
       Parameters:
-#        Subnets: !GetAtt VPC.Outputs.Subnets
         VpcId: !GetAtt VPC.Outputs.VpcId
         Cluster: !GetAtt Cluster.Outputs.ClusterName
         LoadBalancerListener: !GetAtt LoadBalancer.Outputs.LoadBalancerListener
@@ -61,7 +62,4 @@ Resources:
         MongoDbPassword: !Ref MongoDbPassword
         AppImage: !Ref AppImage
         AppTaskCount: !Ref AppTaskCount
-
-
-
-
+        PublicHostname: !Ref PublicHostname

@@ -29,6 +29,9 @@ Parameters:
   AppTaskCount:
     Type: String
 
+  PublicHostname:
+    Type: String
+
 Resources:
   Service:
     Type: AWS::ECS::Service
@@ -65,6 +68,8 @@ Resources:
               Value: !Sub mongodb+srv://admin:${MongoDbPassword}@mongodb.asobann-dev.yattom.jp/asobann_dev?authSource=admin&ssl=false
             - Name: REDIS_URI
               Value: redis+srv://redis.asobann-dev.yattom.jp
+            - Name: PUBLIC_HOSTNAME
+              Value: !Ref PublicHostname
           LogConfiguration:
             LogDriver: awslogs
             Options:

@@ -29,6 +29,9 @@ Parameters:
   AppTaskCount:
     Type: String
 
+  PublicHostname:
+    Type: String
+
 Resources:
   TaskExecutionRole:
     Type: AWS::IAM::Role
@@ -99,6 +102,7 @@ Resources:
         MongoDbPassword: !Ref MongoDbPassword
         AppImage: !Ref AppImage
         AppTaskCount: !Ref AppTaskCount
+        PublicHostname: !Ref PublicHostname
 
 Outputs:
   RedisService:

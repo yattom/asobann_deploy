@@ -18,23 +18,27 @@ def browser():
     yield browser
 
 
-@pytest.mark.parametrize('testcase', DEPLOYMENTS.items())
-def test_alive(browser, testcase):
-    case_name, param = testcase
+@pytest.mark.parametrize('param', DEPLOYMENTS, ids=[p['id'] for p in DEPLOYMENTS])
+def test_alive(browser, param):
     browser.get(param['url'])
     WebDriverWait(browser, 5).until(
         expected_conditions.text_to_be_present_in_element((By.TAG_NAME, 'body'), 'asobann'))
     assert re.match('^.*/tables/[0-9a-z]+$', browser.current_url)
+    WebDriverWait(browser, 5).until(
+        expected_conditions.presence_of_element_located((By.CSS_SELECTOR, 'div.component')))
 
     browser.close()  # do not close on failure
 
 
-@pytest.mark.parametrize('testcase', [e for e in DEPLOYMENTS.items() if 'no_ssl' in e[0]])
-def test_no_ssl_should_be_redirected(browser, testcase):
-    case_name, param = testcase
+NON_SSLS = [p for p in DEPLOYMENTS if 'no_ssl' in p['id']]
+
+@pytest.mark.parametrize('param', NON_SSLS, ids=[p['id'] for p in NON_SSLS])
+def test_no_ssl_should_be_redirected(browser, param):
     browser.get(param['url'])
     WebDriverWait(browser, 5).until(
         expected_conditions.text_to_be_present_in_element((By.TAG_NAME, 'body'), 'asobann'))
     assert browser.current_url.startswith('https')
+    WebDriverWait(browser, 5).until(
+        expected_conditions.presence_of_element_located((By.CSS_SELECTOR, 'div.component')))
 
     browser.close()  # do not close on failure
