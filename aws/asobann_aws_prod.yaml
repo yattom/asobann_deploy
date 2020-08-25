@@ -18,6 +18,9 @@ Parameters:
     Type: String
     Default: 3
 
+  CertificateArn:
+    Type: String
+
 Resources:
   VPC:
     Type: AWS::CloudFormation::Stack
@@ -42,6 +45,8 @@ Resources:
         PublicHostname: asobann.yattom.jp
         Subnets: !GetAtt VPC.Outputs.Subnets
         VpcId: !GetAtt VPC.Outputs.VpcId
+        CertificateArn: !Ref CertificateArn
+
 
   Service:
     Type: AWS::CloudFormation::Stack
