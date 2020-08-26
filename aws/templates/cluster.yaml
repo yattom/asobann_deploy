@@ -115,7 +115,7 @@ Resources:
       LaunchConfigurationName: !Ref LaunchConfiguration
       Tags:
         - Key: Name
-          Value: asobann-dev ECS instance
+          Value: asobann ECS container instance
           PropagateAtLaunch: true
       TerminationPolicies:
         - Default

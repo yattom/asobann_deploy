@@ -55,17 +55,10 @@ Resources:
     Properties:
       LogGroupName: !Sub /ecs/${AWS::StackName}
 
-  #  PrivateHostedZone:
-  #    Type: AWS::Route53::HostedZone
-  #    Properties:
-  #      Name: asobann-dev.
-  #      VPCs:
-  #        - !GetAtt VPC.Outputs.VpcId
-
   PrivateNamespace:
     Type: AWS::ServiceDiscovery::PrivateDnsNamespace
     Properties:
-      Name: asobann-dev.yattom.jp.
+      Name: asobann-internal.yattom.jp.
       Vpc: !Ref VpcId
 
   RedisService:

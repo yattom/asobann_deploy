@@ -68,9 +68,9 @@ Resources:
               ContainerPort: 5000
           Environment:
             - Name: MONGODB_URI
-              Value: !Sub mongodb+srv://admin:${MongoDbPassword}@mongodb.asobann-dev.yattom.jp/asobann_dev?authSource=admin&ssl=false
+              Value: !Sub mongodb+srv://admin:${MongoDbPassword}@mongodb.asobann-internal.yattom.jp/asobann_dev?authSource=admin&ssl=false
             - Name: REDIS_URI
-              Value: redis+srv://redis.asobann-dev.yattom.jp
+              Value: redis+srv://redis.asobann-internal.yattom.jp
             - Name: PUBLIC_HOSTNAME
               Value: !Ref PublicHostname
             - NAME: GOOGLE_ANALYTICS_ID
