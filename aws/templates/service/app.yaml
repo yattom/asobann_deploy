@@ -32,6 +32,9 @@ Parameters:
   PublicHostname:
     Type: String
 
+  GoogleAnalyticsId:
+    Type: String
+
 Resources:
   Service:
     Type: AWS::ECS::Service
@@ -70,6 +73,8 @@ Resources:
               Value: redis+srv://redis.asobann-dev.yattom.jp
             - Name: PUBLIC_HOSTNAME
               Value: !Ref PublicHostname
+            - NAME: GOOGLE_ANALYTICS_ID
+              Value: !Ref GoogleAnalyticsId
           LogConfiguration:
             LogDriver: awslogs
             Options:

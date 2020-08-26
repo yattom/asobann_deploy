@@ -32,6 +32,9 @@ Parameters:
   PublicHostname:
     Type: String
 
+  GoogleAnalyticsId:
+    Type: String
+
 Resources:
   TaskExecutionRole:
     Type: AWS::IAM::Role
@@ -103,6 +106,7 @@ Resources:
         AppImage: !Ref AppImage
         AppTaskCount: !Ref AppTaskCount
         PublicHostname: !Ref PublicHostname
+        GoogleAnalyticsId: !Ref GoogleAnalyticsId
 
 Outputs:
   RedisService:

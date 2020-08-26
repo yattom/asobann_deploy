@@ -24,6 +24,9 @@ Parameters:
   CertificateArn:
     Type: String
 
+  GoogleAnalyticsId:
+    Type: String
+
 Resources:
   VPC:
     Type: AWS::CloudFormation::Stack
@@ -63,3 +66,4 @@ Resources:
         AppImage: !Ref AppImage
         AppTaskCount: !Ref AppTaskCount
         PublicHostname: !Ref PublicHostname
+        GoogleAnalyticsId: !Ref GoogleAnalyticsId
