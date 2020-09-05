@@ -33,16 +33,18 @@ Currently only as development environment.
    ```shell script
    % cd /path/to/asobann_deploy
    % cd aws_dev
-   % aws cloudformation package --template-file asobann_aws_dev.yaml --s3-bucket CFN_BUCKET_NAME \
-       -deploy-cfn --output-template-file OUTPUT_TEMPLATE_FILE
+   % aws cloudformation package --template-file asobann_aws.yaml --s3-bucket CFN_BUCKET_NAME --s3-prefix dev \
+       --output-template-file OUTPUT_TEMPLATE_FILE
    Uploading to xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.template  2500 / 2500.0  (100.00%)
-   Successfully packaged artifacts and wrote output template to file /tmp/asobann_aws_dev.yaml.
+   Successfully packaged artifacts and wrote output template to file /tmp/asobann_aws.yaml.
    Execute the following command to deploy the packaged template
-   aws cloudformation deploy --template-file /tmp/asobann_aws_dev.yaml --stack-name <YOUR STACK NAME>
+   aws cloudformation deploy --template-file /tmp/asobann_aws.yaml --stack-name <YOUR STACK NAME>
 
    % aws cloudformation deploy --template-file OUTPUT_TEMPLATE_FILE --stack-name asobann-dev \
-       --parameter-overrides MaintenanceIpRange=SSH_IP MongoDbPassword=MONGODB_PASSWORD \
+       --parameter-overrides PublicHostname=dev.asobann.example.com \
+       MaintenanceIpRange=SSH_IP MongoDbPassword=MONGODB_PASSWORD \
        AppImage=999999999999.dkr.ecr.REGION.amazonaws.com/asobann_awsdev \
+       AppTaskCount=1 CertificateArn=<Certificate ARN> GoogleAnalyticsId=NotAvailable \
        --capabilities CAPABILITY_IAM
    Waiting for changeset to be created..
    Waiting for stack create/update to complete
@@ -57,6 +59,9 @@ Currently only as development environment.
     
     - SSH_IP: CIDR block for ssh connection.  Set IP range of your own PC like 1.2.3.4/24.  Set 10.0.0.0/16 to prevent ssh from outside. (I hope it works.)
     - MONGODB_PASSWORD: admin user of MongoDB will be created with this password.  Use a sensible one but MongoDB will not be exposed to the internet.
+    - <Certificate ARN>: Certificate arn to use for https
+    - GoogleAnalyticsId: Google Analytics ID like UA-000000000-0.  Disabled in development mode.
+    - AppTaskCount: Desired task number for app service.  Default is 3.
     - AppImage: image of asobann you just pushed in step 1.
     
 1. Access created service.  Get Service URL from outputs in created stacks.  Access from Web AWS Console, or awscli as below.
@@ -100,13 +105,13 @@ alias build_awsprod=' \
 alias cfn_deploy_dev=' \
   # run from asobann_deploy/aws dir
   set -x ; \
-  aws cloudformation package --template-file asobann_aws_dev.yaml --s3-bucket YOURBUCKETNAME --output-template-file /tmp/asobann_aws_dev.yaml ;
-  aws cloudformation deploy --template-file /tmp/asobann_aws_dev.yaml --stack-name asobann-dev --parameter-overrides PublicHostname=dev.asobann.example.com MaintenanceIpRange=192.0.2.0/24 MongoDbPassword=LAMEPASSWORD AppImage=999999999999.dkr.ecr.us-east-1.amazonaws.com/asobann_awsdev AppTaskCount=1 --capabilities CAPABILITY_IAM --tags ProjectName=asobann ; \
+  aws cloudformation package --template-file asobann_aws.yaml --s3-bucket YOURBUCKETNAME --s3-prefix dev --output-template-file /tmp/asobann_aws.yaml ;
+  aws cloudformation deploy --template-file /tmp/asobann_aws.yaml --stack-name asobann-dev --parameter-overrides PublicHostname=dev.asobann.example.com MaintenanceIpRange=192.0.2.0/24 MongoDbPassword=LAMEPASSWORD AppImage=999999999999.dkr.ecr.us-east-1.amazonaws.com/asobann_awsdev AppTaskCount=1 CertificateArn=arn:aws:acm:us-east-1:999999999999:certificate/blahblahblah GoogleAnalyticsId=NotAvailable --capabilities CAPABILITY_IAM --tags ProjectName=asobann AsobannEnv=dev; \
   set +x'
 alias cfn_deploy_prod=' \
   # run from asobann_deploy/aws dir
   set -x ; \
-  aws cloudformation package --template-file asobann_aws_prod.yaml --s3-bucket YOURBUCKETNAME --output-template-file /tmp/asobann_aws_prod.yaml ;
-  aws cloudformation deploy --template-file /tmp/asobann_aws_prod.yaml --stack-name asobann-prod --parameter-overrides PublicHostname=.asobann.example.com MaintenanceIpRange=192.0.2.0/24 MongoDbPassword=SERIOUSPASSWORD AppImage=999999999999.dkr.ecr.us-east-1.amazonaws.com/asobann_awsprod AppTaskCount=3 --capabilities CAPABILITY_IAM --tags ProjectName=asobann ; \
+  aws cloudformation package --template-file asobann_aws.yaml --s3-bucket YOURBUCKETNAME --s3-prefix prod --output-template-file /tmp/asobann_aws.yaml ;
+  aws cloudformation deploy --template-file /tmp/asobann_aws.yaml --stack-name asobann-prod --parameter-overrides PublicHostname=asobann.example.com MaintenanceIpRange=192.0.2.0/24 MongoDbPassword=SERIOUSPASSWORD AppImage=999999999999.dkr.ecr.us-east-1.amazonaws.com/asobann_awsprod AppTaskCount=3 CertificateArn=arn:aws:acm:us-east-1:999999999999:certificate/blahblahblah GoogleAnalyticsId=UA-000000000-0 --capabilities CAPABILITY_IAM --tags ProjectName=asobann AsobannEnv=prod ; \
   set +x'
 ```
