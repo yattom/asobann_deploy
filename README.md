@@ -24,7 +24,7 @@ Currently only as development environment.
    % docker tag asobann_awsdev 999999999999.dkr.ecr.REGION.amazonaws.com/asobann_awsdev
    % aws ecr get-login-password --region REGION | docker login --username AWS --password-stdin \
        999999999999.dkr.ecr.REGION.amazonaws.com/asobann_awsdev
-   % docker push 999999999999.dkr.ecr.us-east-1.amazonaws.com/asobann_awsdev
+   % docker push 999999999999.dkr.ecr.REGION.amazonaws.com/asobann_awsdev
    ```
 
    Replace 999999999999 with your AWS account id and REGION with region name to deploy (e.g. us-east-1)
