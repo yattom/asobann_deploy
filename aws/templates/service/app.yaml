@@ -35,6 +35,18 @@ Parameters:
   GoogleAnalyticsId:
     Type: String
 
+  UploadedImageStore:
+    Type: String
+
+  AwsKey:
+    Type: String
+
+  AwsSecret:
+    Type: String
+
+  ImageBucket:
+    Type: String
+
 Resources:
   Service:
     Type: AWS::ECS::Service
@@ -75,6 +87,14 @@ Resources:
               Value: !Ref PublicHostname
             - NAME: GOOGLE_ANALYTICS_ID
               Value: !Ref GoogleAnalyticsId
+            - NAME: UPLOADED_IMAGE_STORE
+              Value: !Ref UploadedImageStore
+            - NAME: AWS_KEY
+              Value: !Ref AwsKey
+            - NAME: AWS_SECRET
+              Value: !Ref AwsSecret
+            - NAME: AWS_S3_IMAGE_BUCKET_NAME
+              Value: !Ref ImageBucket
           LogConfiguration:
             LogDriver: awslogs
             Options:

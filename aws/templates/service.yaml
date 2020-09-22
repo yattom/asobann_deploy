@@ -35,6 +35,18 @@ Parameters:
   GoogleAnalyticsId:
     Type: String
 
+  UploadedImageStore:
+    Type: String
+
+  AwsKey:
+    Type: String
+
+  AwsSecret:
+    Type: String
+
+  ImageBucket:
+    Type: String
+
 Resources:
   TaskExecutionRole:
     Type: AWS::IAM::Role
@@ -100,6 +112,10 @@ Resources:
         AppTaskCount: !Ref AppTaskCount
         PublicHostname: !Ref PublicHostname
         GoogleAnalyticsId: !Ref GoogleAnalyticsId
+        UploadedImageStore: !Ref UploadedImageStore
+        AwsKey: !Ref AwsKey
+        AwsSecret: !Ref AwsSecret
+        ImageBucket: !Ref ImageBucket
 
 Outputs:
   RedisService:

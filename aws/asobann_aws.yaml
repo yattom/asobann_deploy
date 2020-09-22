@@ -27,6 +27,18 @@ Parameters:
   GoogleAnalyticsId:
     Type: String
 
+  UploadedImageStore:
+    Type: String
+    Default: local
+
+  AwsKey:
+    Type: String
+    Default: NOT_SET
+
+  AwsSecret:
+    Type: String
+    Default: NOT_SET
+
 Resources:
   VPC:
     Type: AWS::CloudFormation::Stack
@@ -67,3 +79,12 @@ Resources:
         AppTaskCount: !Ref AppTaskCount
         PublicHostname: !Ref PublicHostname
         GoogleAnalyticsId: !Ref GoogleAnalyticsId
+        AwsKey: !Ref AwsKey
+        AwsSecret: !Ref AwsSecret
+        UploadedImageStore: !Ref UploadedImageStore
+        ImageBucket: !GetAtt S3Bucket.Outputs.ImageBucket
+
+  S3Bucket:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: templates/s3-bucket.yaml

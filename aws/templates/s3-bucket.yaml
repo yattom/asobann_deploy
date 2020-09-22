@@ -1,0 +1,15 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Resources:
+  ImageBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: Private
+      Tags:
+        - Key: ProjectName
+          Value: asobann
+
+Outputs:
+  ImageBucket:
+    Value: !Ref ImageBucket
+
