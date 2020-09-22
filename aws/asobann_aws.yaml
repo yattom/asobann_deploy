@@ -5,6 +5,10 @@ Description: >
   This environment will not have fixed URL.
 
 Parameters:
+  InstanceType:
+    Type: String
+    Default: t3.small
+
   MaintenanceIpRange:
     Type: String
 
@@ -50,6 +54,7 @@ Resources:
     Properties:
       TemplateURL: templates/cluster.yaml
       Parameters:
+        InstanceType: !Ref InstanceType
         VpcId: !GetAtt VPC.Outputs.VpcId
         Subnets: !GetAtt VPC.Outputs.Subnets
         LBSecurityGroup: !GetAtt LoadBalancer.Outputs.LBSecurityGroup
