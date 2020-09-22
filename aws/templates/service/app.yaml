@@ -93,6 +93,8 @@ Resources:
               Value: !Ref AwsKey
             - NAME: AWS_SECRET
               Value: !Ref AwsSecret
+            - NAME: AWS_REGION
+              Value: !Ref AWS::Region
             - NAME: AWS_S3_IMAGE_BUCKET_NAME
               Value: !Ref ImageBucket
           LogConfiguration:
