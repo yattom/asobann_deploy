@@ -47,6 +47,9 @@ Parameters:
   ImageBucket:
     Type: String
 
+  DebugOpts:
+    Type: String
+
 Resources:
   TaskExecutionRole:
     Type: AWS::IAM::Role
@@ -116,6 +119,7 @@ Resources:
         AwsKey: !Ref AwsKey
         AwsSecret: !Ref AwsSecret
         ImageBucket: !Ref ImageBucket
+        DebugOpts: !Ref DebugOpts
 
 Outputs:
   RedisService:

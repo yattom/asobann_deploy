@@ -43,6 +43,10 @@ Parameters:
     Type: String
     Default: NOT_SET
 
+  DebugOpts:
+    Type: String
+    Default: NOT_SET
+
 Resources:
   VPC:
     Type: AWS::CloudFormation::Stack
@@ -88,6 +92,7 @@ Resources:
         AwsSecret: !Ref AwsSecret
         UploadedImageStore: !Ref UploadedImageStore
         ImageBucket: !GetAtt S3Bucket.Outputs.ImageBucket
+        DebugOpts: !Ref DebugOpts
 
   S3Bucket:
     Type: AWS::CloudFormation::Stack
