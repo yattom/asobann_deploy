@@ -10,16 +10,29 @@ Currently only as development environment.
 
 ## Prerequisite
 
+- Python 3.6 >= and pip is installed.
 - AWS CLI installed and set up.
 - Checked out asobann https://github.com/yattom/asobann_app already.
 - Checked out this repository.
+- node >=v14 is installed.
 
 ## How to deploy
+
+0. Make sure development environment is setup.  (Do this when library configuration is updated.)
+
+   ```shell script
+   % cd /path/to/asobann
+   % npm install
+   % pip install pipenv
+   ```
 
 1. Build asobann image and push to ECR.
 
    ```shell script
    % cd /path/to/asobann
+   % npx webpack
+   % pipenv sync
+   % pipenv run pip freeze > requirements.txt
    % docker build -f Dockerfile.awsdev -t asobann_awsdev:latest .
    % docker tag asobann_awsdev 999999999999.dkr.ecr.REGION.amazonaws.com/asobann_awsdev
    % aws ecr get-login-password --region REGION | docker login --username AWS --password-stdin \
