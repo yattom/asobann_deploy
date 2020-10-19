@@ -33,11 +33,11 @@ Currently only as development environment.
    % npx webpack
    % pipenv sync
    % pipenv run pip freeze > requirements.txt
-   % docker build -f Dockerfile.awsdev -t asobann_awsdev:latest .
-   % docker tag asobann_awsdev 999999999999.dkr.ecr.REGION.amazonaws.com/asobann_awsdev
+   % docker build -f Dockerfile.aws -t asobann_aws:latest .
+   % docker tag asobann_aws 999999999999.dkr.ecr.REGION.amazonaws.com/asobann_aws
    % aws ecr get-login-password --region REGION | docker login --username AWS --password-stdin \
-       999999999999.dkr.ecr.REGION.amazonaws.com/asobann_awsdev
-   % docker push 999999999999.dkr.ecr.REGION.amazonaws.com/asobann_awsdev
+       999999999999.dkr.ecr.REGION.amazonaws.com/asobann_aws
+   % docker push 999999999999.dkr.ecr.REGION.amazonaws.com/asobann_aws
    ```
 
    Replace 999999999999 with your AWS account id and REGION with region name to deploy (e.g. us-east-1)
@@ -57,7 +57,7 @@ Currently only as development environment.
    % aws cloudformation deploy --template-file OUTPUT_TEMPLATE_FILE --stack-name asobann-dev \
        --parameter-overrides PublicHostname=dev.asobann.example.com \
        MaintenanceIpRange=SSH_IP MongoDbPassword=MONGODB_PASSWORD \
-       AppImage=999999999999.dkr.ecr.REGION.amazonaws.com/asobann_awsdev \
+       AppImage=999999999999.dkr.ecr.REGION.amazonaws.com/asobann_aws \
        AppTaskCount=1 CertificateArn=<Certificate ARN> GoogleAnalyticsId=NotAvailable \
        --capabilities CAPABILITY_IAM
    Waiting for changeset to be created..
@@ -100,32 +100,25 @@ Currently only as development environment.
 I set and use shell aliases like this:
 
 ```shell script
-alias build_awsdev=' \
+alias build_aws=' \
   # run from asobann_app dir
   set -x ; \
-  docker build -f Dockerfile.awsdev -t asobann_awsdev:latest . ; \
-  docker tag asobann_awsdev 999999999999.dkr.ecr.us-east-1.amazonaws.com/asobann_awsdev ; \
-  aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 999999999999.dkr.ecr.us-east-1.amazonaws.com/asobann_awsdev ; \
-  docker push 999999999999.dkr.ecr.us-east-1.amazonaws.com/asobann_awsdev ; \
-  set +x'
-alias build_awsprod=' \
-  # run from asobann_app dir
-  set -x ; \
-  docker build -f Dockerfile.awsprod -t asobann_awsprod:latest . ; \
-  docker tag asobann_awsprod 999999999999.dkr.ecr.us-east-1.amazonaws.com/asobann_awsprod ; \
-  aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 999999999999.dkr.ecr.us-east-1.amazonaws.com/asobann_awsprod ; \
-  docker push 999999999999.dkr.ecr.us-east-1.amazonaws.com/asobann_awsprod ; \
+  npx watch ; \
+  docker build -f Dockerfile.aws -t asobann_aws:latest . ; \
+  docker tag asobann_aws 999999999999.dkr.ecr.us-east-1.amazonaws.com/asobann_aws ; \
+  aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 999999999999.dkr.ecr.us-east-1.amazonaws.com/asobann_aws ; \
+  docker push 999999999999.dkr.ecr.us-east-1.amazonaws.com/asobann_aws ; \
   set +x'
 alias cfn_deploy_dev=' \
   # run from asobann_deploy/aws dir
   set -x ; \
   aws cloudformation package --template-file asobann_aws.yaml --s3-bucket YOURBUCKETNAME --s3-prefix dev --output-template-file /tmp/asobann_aws.yaml ;
-  aws cloudformation deploy --template-file /tmp/asobann_aws.yaml --stack-name asobann-dev --parameter-overrides PublicHostname=dev.asobann.example.com MaintenanceIpRange=192.0.2.0/24 MongoDbPassword=LAMEPASSWORD AppImage=999999999999.dkr.ecr.us-east-1.amazonaws.com/asobann_awsdev AppTaskCount=1 CertificateArn=arn:aws:acm:us-east-1:999999999999:certificate/blahblahblah GoogleAnalyticsId=NotAvailable --capabilities CAPABILITY_IAM --tags ProjectName=asobann AsobannEnv=dev; \
+  aws cloudformation deploy --template-file /tmp/asobann_aws.yaml --stack-name asobann-dev --parameter-overrides PublicHostname=dev.asobann.example.com MaintenanceIpRange=192.0.2.0/24 MongoDbPassword=LAMEPASSWORD AppImage=999999999999.dkr.ecr.us-east-1.amazonaws.com/asobann_aws AppTaskCount=1 CertificateArn=arn:aws:acm:us-east-1:999999999999:certificate/blahblahblah GoogleAnalyticsId=NotAvailable --capabilities CAPABILITY_IAM --tags ProjectName=asobann AsobannEnv=dev; \
   set +x'
 alias cfn_deploy_prod=' \
   # run from asobann_deploy/aws dir
   set -x ; \
   aws cloudformation package --template-file asobann_aws.yaml --s3-bucket YOURBUCKETNAME --s3-prefix prod --output-template-file /tmp/asobann_aws.yaml ;
-  aws cloudformation deploy --template-file /tmp/asobann_aws.yaml --stack-name asobann-prod --parameter-overrides PublicHostname=asobann.example.com MaintenanceIpRange=192.0.2.0/24 MongoDbPassword=SERIOUSPASSWORD AppImage=999999999999.dkr.ecr.us-east-1.amazonaws.com/asobann_awsprod AppTaskCount=3 CertificateArn=arn:aws:acm:us-east-1:999999999999:certificate/blahblahblah GoogleAnalyticsId=UA-000000000-0 --capabilities CAPABILITY_IAM --tags ProjectName=asobann AsobannEnv=prod ; \
+  aws cloudformation deploy --template-file /tmp/asobann_aws.yaml --stack-name asobann-prod --parameter-overrides PublicHostname=asobann.example.com MaintenanceIpRange=192.0.2.0/24 MongoDbPassword=SERIOUSPASSWORD AppImage=999999999999.dkr.ecr.us-east-1.amazonaws.com/asobann_aws AppTaskCount=3 CertificateArn=arn:aws:acm:us-east-1:999999999999:certificate/blahblahblah GoogleAnalyticsId=UA-000000000-0 --capabilities CAPABILITY_IAM --tags ProjectName=asobann AsobannEnv=prod ; \
   set +x'
 ```

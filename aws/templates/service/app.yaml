@@ -47,6 +47,9 @@ Parameters:
   ImageBucket:
     Type: String
 
+  FlaskEnv:
+    Type: String
+
   DebugOpts:
     Type: String
 
@@ -100,6 +103,8 @@ Resources:
               Value: !Ref AWS::Region
             - NAME: AWS_S3_IMAGE_BUCKET_NAME
               Value: !Ref ImageBucket
+            - NAME: FLASK_ENV
+              Value: !Ref FlaskEnv
             - NAME: ASOBANN_DEBUG_OPTS
               Value: !Ref DebugOpts
           LogConfiguration:

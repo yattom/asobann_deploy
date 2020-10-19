@@ -43,6 +43,10 @@ Parameters:
     Type: String
     Default: NOT_SET
 
+  FlaskEnv:
+    Type: String
+    Default: production
+
   DebugOpts:
     Type: String
     Default: NOT_SET
@@ -92,6 +96,7 @@ Resources:
         AwsSecret: !Ref AwsSecret
         UploadedImageStore: !Ref UploadedImageStore
         ImageBucket: !GetAtt S3Bucket.Outputs.ImageBucket
+        FlaskEnv: !Ref FlaskEnv
         DebugOpts: !Ref DebugOpts
 
   S3Bucket:
