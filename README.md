@@ -1,20 +1,22 @@
 Deploy [asobann](https://github.com/yattom/asobann_app) to AWS ECS with CloudFormation.
-Currently only as development environment.
+
 
 ## Limitations
-- This works only for development environment for now.  
-- ALL DATA WILL BE LOST upon deployment, updating stacks, and / or restarting tasks or instances.
-- It has no stable URL.  You need to get new URL after deployment which recreates ALB.
+- Table data will be retained upon deployment, updating stacks, and / or restarting tasks or instances.
+- Kit data will be initialized upon each deployment.
+- EBS volume will be created and used to persist table data between deployments.
+- S3 bucket will be created and used for image storage.
+- You need a domain and https certificate to be available on Route53.
 - This deployment will not fit within AWS free tier, or so I think.
 - EC2 instance type is fixed to t3.small.
 
 ## Prerequisite
 
-- Python 3.6 >= and pip is installed.
+- Python >= 3.6 and pip is installed.
 - AWS CLI installed and set up.
-- Checked out asobann https://github.com/yattom/asobann_app already.
+- node >= v14 is installed.
+- Checked out asobann ```https://github.com/yattom/asobann_app``` already.
 - Checked out this repository.
-- node >=v14 is installed.
 
 ## How to deploy
 
@@ -29,7 +31,7 @@ Currently only as development environment.
 1. Build asobann image and push to ECR.
 
    ```shell script
-   % cd /path/to/asobann
+   % cd /path/to/asobann_app
    % npx webpack
    % pipenv sync
    % pipenv run pip freeze > requirements.txt
@@ -56,9 +58,11 @@ Currently only as development environment.
 
    % aws cloudformation deploy --template-file OUTPUT_TEMPLATE_FILE --stack-name asobann-dev \
        --parameter-overrides PublicHostname=dev.asobann.example.com \
-       MaintenanceIpRange=SSH_IP MongoDbPassword=MONGODB_PASSWORD \
+       MaintenanceIpRange=<SSH_IP> MongoDbPassword=senSiblPssw0rd \
        AppImage=999999999999.dkr.ecr.REGION.amazonaws.com/asobann_aws \
        AppTaskCount=1 CertificateArn=<Certificate ARN> GoogleAnalyticsId=NotAvailable \
+       UploadedImageStore=s3 AwsKey=<AWS_KEY> AwsSecret=<AWS_SECRET> FlaskEnv=development \
+       DebugOpts=LOG \
        --capabilities CAPABILITY_IAM
    Waiting for changeset to be created..
    Waiting for stack create/update to complete
@@ -71,12 +75,17 @@ Currently only as development environment.
     
     You need to specify parameters.
     
-    - SSH_IP: CIDR block for ssh connection.  Set IP range of your own PC like 1.2.3.4/24.  Set 10.0.0.0/16 to prevent ssh from outside. (I hope it works.)
-    - MONGODB_PASSWORD: admin user of MongoDB will be created with this password.  Use a sensible one but MongoDB will not be exposed to the internet.
-    - <Certificate ARN>: Certificate arn to use for https
-    - GoogleAnalyticsId: Google Analytics ID like UA-000000000-0.  Disabled in development mode.
-    - AppTaskCount: Desired task number for app service.  Default is 3.
+    - PublicHostname: Service hostname.  You can access the service with this name.  Domain must be already registered in Route53.  (_Hostname registration is screwed in the template in the time being.  Please be careful and do the patching by yourself._)
+    - \<SSH_IP\>: CIDR block for ssh connection.  Set IP range of your own PC like 1.2.3.4/24.  Set 10.0.0.0/16 to prevent ssh from outside. (I hope it works.)
+    - MongoDbPassword: admin user of MongoDB will be created with this password.  Use a sensible one but MongoDB will not be exposed to the internet.
+    - \<Certificate ARN\>: Certificate arn to use for https
     - AppImage: image of asobann you just pushed in step 1.
+    - AppTaskCount: Desired task number for app service.  Default is 3.
+    - GoogleAnalyticsId: Google Analytics ID like UA-000000000-0.  Disabled in development mode.
+    - UploadedImageStore: Where uploaded images are stored.  Either ***s3*** or ***local***.  Default to local.  Local storage will be cleared when restarting app service.
+    - \<AWS_KEY\>, \<AWS_SECRET\>: AWS Key and secret for app to access S3 bucket.
+    - FlaskEnv: Either **development** or **production**.  Default to production.
+    - DebugOpts: Comma separated list of debug options.  See asobann_app/src/asobann/config_dev.py.  FLASK_ENV must be development for debug options to work.
     
 1. Access created service.  Get Service URL from outputs in created stacks.  Access from Web AWS Console, or awscli as below.
 
