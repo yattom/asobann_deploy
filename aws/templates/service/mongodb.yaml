@@ -20,6 +20,9 @@ Parameters:
   MongoDbPassword:
     Type: String
 
+  AsobannEnv:
+    Type: String
+
 Resources:
   MongoDbService:
     Type: AWS::ECS::Service
@@ -51,7 +54,7 @@ Resources:
             - Protocol: tcp
               ContainerPort: 27017
           MountPoints:
-            - SourceVolume: mongodb-data
+            - SourceVolume: !Sub mongodb-data-${AsobannEnv}
               ContainerPath: /data/db
               ReadOnly: false
           Environment:

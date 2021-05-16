@@ -47,6 +47,9 @@ Parameters:
   ImageBucket:
     Type: String
 
+  AsobannEnv:
+    Type: String
+
   FlaskEnv:
     Type: String
 
@@ -101,6 +104,7 @@ Resources:
         LogGroup: !Ref LogGroup
         PrivateNamespace: !Ref PrivateNamespace
         MongoDbPassword: !Ref MongoDbPassword
+        AsobannEnv: !Ref AsobannEnv
 
   AppService:
     Type: AWS::CloudFormation::Stack
