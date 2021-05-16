@@ -2,6 +2,17 @@ from pathlib import Path
 import os
 import subprocess
 
+'''
+Build docker image with the local files in asobann_app and push to AWS ECR (Container Registry).
+
+% cd deploy/tools  # actually it can run from anywhere
+% python3 build_image.py
+
+Notes:
+- Invokes AWS CLI command internally.
+- ECR URI is embedded.
+'''
+
 config = {
 
 }
