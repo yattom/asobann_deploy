@@ -69,7 +69,7 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-stream-prefix: !Sub /ecs/${AWS::StackName}/mongodb
       Volumes:
-        - Name: mongodb-data
+        - Name: !Sub mongodb-data-${AsobannEnv}
           DockerVolumeConfiguration:
             Scope: shared
             AutoProvision: true
@@ -93,6 +93,6 @@ Resources:
       NamespaceId: !Ref PrivateNamespace
 
 Outputs:
-  RedisService:
+  MongoDbService:
     Value: !Ref MongoDbService
 

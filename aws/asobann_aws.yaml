@@ -43,9 +43,6 @@ Parameters:
     Type: String
     Default: NOT_SET
 
-  AsobannEnv:
-    Type: String
-
   FlaskEnv:
     Type: String
     Default: production
@@ -99,7 +96,7 @@ Resources:
         AwsSecret: !Ref AwsSecret
         UploadedImageStore: !Ref UploadedImageStore
         ImageBucket: !GetAtt S3Bucket.Outputs.ImageBucket
-        AsobannEnv: !Ref AsobannEnv
+        AsobannEnv: !Ref AWS::StackName
         FlaskEnv: !Ref FlaskEnv
         DebugOpts: !Ref DebugOpts
 
